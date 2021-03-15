@@ -1,50 +1,56 @@
-_schema-version: "3.2"
+_schema-version: '3.2'
 ID: Invoices
 version: 0.0.1
 modules:
-- name: invoices-approuter
-  type: approuter.nodejs
-  path: invoices-approuter
-  requires:
-  - name: Invoices_html_repo_runtime
-  parameters:
-    disk-quota: 256M
-    memory: 256M
-- name: Invoices_ui_deployer
-  type: com.sap.application.content
-  path: .
-  requires:
-  - name: Invoices_html_repo_host
-    parameters:
-      content-target: true
-  build-parameters:
-    build-result: resources
+  - name: invoices-approuter
+    type: approuter.nodejs
+    path: invoices-approuter
     requires:
-    - artifacts:
-      - SAPUI5-content.zip
-      name: SAPUI5
-      target-path: resources/
-- name: SAPUI5
-  type: html5
-  path: SAPUI5
-  build-parameters:
-    builder: custom
-    commands:
-    - npm run build
-    supported-platforms: []
+      - name: Invoices_html_repo_runtime
+      - name: dest_Invoices
+    parameters:
+      disk-quota: 256M
+      memory: 256M
+  - name: Invoices_ui_deployer
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: Invoices_html_repo_host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - artifacts:
+            - SAPUI5-content.zip
+          name: SAPUI5
+          target-path: resources/
+  - name: SAPUI5
+    type: html5
+    path: SAPUI5
+    build-parameters:
+      builder: custom
+      commands:
+        - npm run build
+      supported-platforms: []
 resources:
-- name: Invoices_html_repo_runtime
-  type: org.cloudfoundry.managed-service
-  parameters:
-    service: html5-apps-repo
-    service-plan: app-runtime
-- name: Invoices_html_repo_host
-  type: org.cloudfoundry.managed-service
-  parameters:
-    service: html5-apps-repo
-    service-plan: app-host
+  - name: Invoices_html_repo_runtime
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+  - name: Invoices_html_repo_host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+  - name: dest_Invoices
+    parameters:
+      service-plan: lite
+      service: destination
+    type: org.cloudfoundry.managed-service
 build-parameters:
   before-all:
-  - builder: custom
-    commands:
-    - npm install
+    - builder: custom
+      commands:
+        - npm install
